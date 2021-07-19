@@ -6,14 +6,35 @@ import { pickRandom } from "./random";
 const app = express();
 const serverStartDate = new Date();
 let serverHitCount = 0;
+let routeHistory:string[] = []
+
+app.get("/history", (req, res) => {
+  routeHistory.push("/history");
+  res.json({
+    routes: routeHistory
+  });
+});
+
+app.get("/hello-world", (req, res) => {
+  routeHistory.push("/hello-world");
+  res.json({
+    english: "Hello world!",
+    esperanto: "Saluton mondo!",
+    hawaiian: "Aloha Honua",
+    turkish: "Merhaba Dünya!"
+  });
+});
+
 
 app.get("/", (req, res) => {
+  routeHistory.push("/")
   res.send(
     "This is the default path - and it isn't very interesting, sorry. \nTry visiting localhost:4000/creation-time, localhost:4000/current-time"
   );
 });
 
 app.get("/creation-time", (req, res) => {
+  routeHistory.push("/creation-time")
   res.json({
     message: `The server was started at ${serverStartDate.toTimeString()}`,
     utc: serverStartDate.toUTCString(),
@@ -22,6 +43,7 @@ app.get("/creation-time", (req, res) => {
 });
 
 app.get("/current-time", (req, res) => {
+  routeHistory.push("/current-time")
   const dateOfRequestHandling = new Date();
 
   res.json({
@@ -32,6 +54,7 @@ app.get("/current-time", (req, res) => {
 });
 
 app.get("/hits", (req, res) => {
+  routeHistory.push("/hits")
   serverHitCount += 1;
   res.json({
     note: "We've registered your hit!",
@@ -41,6 +64,7 @@ app.get("/hits", (req, res) => {
 });
 
 app.get("/hits-stealth", (req, res) => {
+  routeHistory.push("/hits.stealth")
   res.json({
     note: "Oooh, you ninja. We didn't count that hit.",
     currentTotal: serverHitCount,
@@ -49,6 +73,7 @@ app.get("/hits-stealth", (req, res) => {
 });
 
 app.get("/ponies", (req, res) => {
+  routeHistory.push("/ponies")
   res.json({
     message: "Loaded dummy JSON data:",
     data: ponyData,
@@ -56,7 +81,17 @@ app.get("/ponies", (req, res) => {
   });
 });
 
+app.get("/ponies/random", (req, res) => {
+  routeHistory.push("/ponies/random")
+  const randomPony = pickRandom(ponyData.members)
+  res.json({
+    message: "Loaded random dummy JSON data:",
+    data: randomPony,
+  });
+});
+
 app.get("/season-one", (req, res) => {
+  routeHistory.push("/season-one")
   res.json({
     countedAsHit: false,
     data: seasonOneEpisodes,
@@ -64,6 +99,7 @@ app.get("/season-one", (req, res) => {
 });
 
 app.get("/season-one/random", (req, res) => {
+  routeHistory.push("/season-one/random")
   const randomEpisode = pickRandom(seasonOneEpisodes);
   res.json({
     countedAsHit: false,
